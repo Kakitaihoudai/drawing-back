@@ -11,22 +11,22 @@ datasource db {
 }
 
 model site_user {
-  id             Int       @id @default(autoincrement())
-  username       String    @unique
-  saltedHash     String
-  accountCreated DateTime  @default(now())
-  drawings       drawing[] @relation("user_drawings")
+  id              Int       @id @default(autoincrement())
+  username        String    @unique
+  salted_hash     String
+  account_created DateTime  @default(now())
+  drawings        drawing[] @relation("user_drawings")
 }
 
 model drawing {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  title     String   @db.VarChar(255)
-  content   String
-  posted    Boolean  @default(false)
-  author    site_user @relation(fields: [userId], references: [id], name: "user_drawings")
-  userId    Int
-  likes     Int      @default(0)
-  dislikes  Int      @default(0)
+  id         Int       @id @default(autoincrement())
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  title      String    @db.VarChar(255)
+  content    String
+  posted     Boolean   @default(false)
+  author     site_user @relation(fields: [userId], references: [id], name: "user_drawings")
+  userId     Int
+  likes      Int       @default(0)
+  dislikes   Int       @default(0)
 }
