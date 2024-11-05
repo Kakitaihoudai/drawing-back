@@ -1,0 +1,33 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model site_user {
+  id              Int       @id @default(autoincrement())
+  username        String    @unique
+  salted_hash     String
+  account_created DateTime  @default(now())
+  drawings        drawing[] @relation("user_drawings")
+}
+
+model drawing {
+  id         Int       @id @default(autoincrement())
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  posted_at  DateTime?
+  title      String    @db.VarChar(255)
+  content    String    @db.Text
+  posted     Boolean   @default(false)
+  author     site_user @relation(fields: [user_id], references: [id], name: "user_drawings")
+  user_id     Int
+  likes      Int       @default(0)
+  dislikes   Int       @default(0)
+}
