@@ -5,20 +5,20 @@
   "description": "a simple drawing app server",
   "scripts": {
     "build": "tsc",
-    "start": "node --loader ts-node/esm src/server.ts",
-    "dev": "nodemon --exec node --loader ts-node/esm src/server.ts"
+    "start": "npx tsx src/server.ts",
+    "dev": "tsx watch src/server.ts"
   },
   "dependencies": {
     "@prisma/client": "^5.21.1",
     "bcrypt-ts": "^5.0.2",
     "cors": "^2.8.5",
-    "express": "^4.21.1"
+    "express": "^4.21.1",
+    "tsx": "^4.19.2"
   },
   "devDependencies": {
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
     "@types/node": "^22.8.7",
-    "nodemon": "^3.1.7",
     "prisma": "^5.21.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.6.3"

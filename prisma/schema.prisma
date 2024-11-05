@@ -22,11 +22,12 @@ model drawing {
   id         Int       @id @default(autoincrement())
   created_at DateTime  @default(now())
   updated_at DateTime  @updatedAt
+  posted_at  DateTime?
   title      String    @db.VarChar(255)
-  content    String
+  content    String    @db.Text
   posted     Boolean   @default(false)
-  author     site_user @relation(fields: [userId], references: [id], name: "user_drawings")
-  userId     Int
+  author     site_user @relation(fields: [user_id], references: [id], name: "user_drawings")
+  user_id     Int
   likes      Int       @default(0)
   dislikes   Int       @default(0)
 }
