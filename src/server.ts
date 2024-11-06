@@ -113,7 +113,7 @@ app.delete("/delete-drawing", async (req, res) => {
         id: id,
       },
     });
-    res.status(204);
+    res.status(200).send("Drawing has been deleted.");
   } catch (error) {
     console.error("Error deleting: ", error);
   }
