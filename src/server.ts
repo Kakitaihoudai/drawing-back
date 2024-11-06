@@ -99,11 +99,25 @@ app.patch("/update-drawing", async (req, res) => {
         content: content,
       },
     });
-    res.status(204).send(updatedDrawing);
+    res.status(204);
   } catch (error) {
     console.error("Error updating: ", error);
   }
 });
+
+app.delete("/delete-drawing", async (req, res) => {
+  const { id } = req.body;
+  try {
+    const deleted = await prisma.drawing.delete({
+      where: {
+        id: id,
+      },
+    });
+    res.status(200).send("Drawing has been deleted.");
+  } catch (error) {
+    console.error("Error deleting: ", error);
+  }
+})
 
 //functions
 async function addUser(username: string, saltedHash: string) {
