@@ -99,7 +99,7 @@ app.patch("/update-drawing", async (req, res) => {
         content: content,
       },
     });
-    res.status(200).send(updatedDrawing);
+    res.status(204).send(updatedDrawing);
   } catch (error) {
     console.error("Error updating: ", error);
   }
