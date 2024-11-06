@@ -1,23 +1,23 @@
-import express from 'express';
-import cors from 'cors';
-import { PrismaClient } from '@prisma/client';
-import { hash, compare } from 'bcrypt-ts';
+import express from "express";
+import cors from "cors";
+import { PrismaClient } from "@prisma/client";
+import { hash, compare } from "bcrypt-ts";
 
 const app = express();
 const PORT = process.env.PORT || 8080;
-const prisma = new PrismaClient()
+const prisma = new PrismaClient();
 
 app.use(express.json());
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 
 //HTTP requests
-app.get('/', (req, res) => {
-  res.send('Hello World!')
+app.get("/", (req, res) => {
+  res.send("Hello World!");
 });
 
-app.post('/register', async (req, res) => {
-  const {username, password} = req.body;
+app.post("/register", async (req, res) => {
+  const { username, password } = req.body;
   const userExist = await checkForUsername(username);
 
   if (!userExist) {
@@ -28,15 +28,13 @@ app.post('/register', async (req, res) => {
     } else {
       res.status(500).send("Error hashing.");
     }
-
-
   } else {
-    res.status(400).send("User already exists.")
+    res.status(400).send("User already exists.");
   }
 });
 
-app.post('/login', async (req, res) => {
-  const {username, password} = req.body;
+app.post("/login", async (req, res) => {
+  const { username, password } = req.body;
   const userFound = await checkForUsername(username);
 
   if (userFound) {
@@ -44,17 +42,17 @@ app.post('/login', async (req, res) => {
     const authCheck = await verifyPassword(password, saltedHash);
 
     if (authCheck) {
-      res.status(200).send({id: userFound.id})
+      res.status(200).send({ id: userFound.id });
     } else {
-      res.status(401).send("Authentication failed")
+      res.status(401).send("Authentication failed");
     }
   } else {
     res.status(404).send("User not found");
   }
 });
 
-app.post('/save-drawing', (req, res) => {
-  const {title, content, user_id} = req.body;
+app.post("/save-drawing", (req, res) => {
+  const { title, content, user_id } = req.body;
   const newDrawing = storeDrawing(title, content, user_id);
   if (newDrawing) {
     res.status(201).send(newDrawing);
@@ -63,14 +61,57 @@ app.post('/save-drawing', (req, res) => {
   }
 });
 
+app.post("/my-drawings", async (req, res) => {
+  const { user_id } = req.body;
+  const drawingList = await prisma.drawing.findMany({
+    where: {
+      user_id: user_id,
+    },
+    orderBy: {
+      updated_at: "desc",
+    },
+  });
+  res.status(200).send(drawingList);
+});
+
+app.post("/single-drawing", async (req, res) => {
+  const { id } = req.body;
+  const drawing = await prisma.drawing.findUnique({
+    where: {
+      id: id,
+    },
+  });
+  if (drawing) {
+    res.status(200).send(drawing);
+  } else {
+    res.status(404).send("Drawing not found.");
+  }
+});
+
+app.patch("/update-drawing", async (req, res) => {
+  const { id, content } = req.body;
+  try {
+    const updatedDrawing = await prisma.drawing.update({
+      where: {
+        id: id,
+      },
+      data: {
+        content: content,
+      },
+    });
+    res.status(204).send(updatedDrawing);
+  } catch (error) {
+    console.error("Error updating: ", error);
+  }
+});
 
 //functions
 async function addUser(username: string, saltedHash: string) {
   await prisma.site_user.create({
     data: {
       username: username,
-      salted_hash: saltedHash
-    }
+      salted_hash: saltedHash,
+    },
   });
   return await checkForUsername(username);
 }
@@ -81,7 +122,7 @@ async function hashPassword(origPass: string) {
     const hashedPass: string = await hash(origPass, saltRounds);
     return hashedPass;
   } catch (err) {
-    console.error('Verification error:', err);
+    console.error("Verification error:", err);
   }
 }
 
@@ -94,7 +135,7 @@ async function checkForUsername(username: string) {
     where: {
       username: username,
     },
-  })
+  });
 }
 
 async function storeDrawing(title: string, content: string, userId: number) {
@@ -103,15 +144,15 @@ async function storeDrawing(title: string, content: string, userId: number) {
       data: {
         title: title,
         content: content,
-        user_id: userId
-      }
-    })
+        user_id: userId,
+      },
+    });
     return newDrawing;
   } catch (err) {
-    console.error('Error adding drawing: ', err);
+    console.error("Error adding drawing: ", err);
   }
 }
 
-app.listen(PORT, () =>{
+app.listen(PORT, () => {
   console.log(`Express server is up and running at http://localhost:${PORT}`);
 });
