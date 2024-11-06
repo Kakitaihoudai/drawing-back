@@ -61,14 +61,48 @@ app.post("/save-drawing", (req, res) => {
   }
 });
 
-app.get("/my-drawings", async (req, res) => {
+app.post("/my-drawings", async (req, res) => {
   const { user_id } = req.body;
   const drawingList = await prisma.drawing.findMany({
     where: {
       user_id: user_id,
     },
+    orderBy: {
+      updated_at: "desc",
+    },
   });
   res.status(200).send(drawingList);
+});
+
+app.post("/single-drawing", async (req, res) => {
+  const { id } = req.body;
+  const drawing = await prisma.drawing.findUnique({
+    where: {
+      id: id,
+    },
+  });
+  if (drawing) {
+    res.status(200).send(drawing);
+  } else {
+    res.status(404).send("Drawing not found.");
+  }
+});
+
+app.patch("/update-drawing", async (req, res) => {
+  const { id, content } = req.body;
+  try {
+    const updatedDrawing = await prisma.drawing.update({
+      where: {
+        id: id,
+      },
+      data: {
+        content: content,
+      },
+    });
+    res.status(200).send(updatedDrawing);
+  } catch (error) {
+    console.error("Error updating: ", error);
+  }
 });
 
 //functions
