@@ -141,8 +141,21 @@ app.patch("/post-drawing", async (req, res) => {
 });
 
 app.get("/posted-drawings", async (req, res) => {
-  
-})
+  try{
+    const postedDrawings = await prisma.drawing.findMany({
+      where: {
+        posted: true,
+      },
+      orderBy: {
+        posted_at: "desc",
+      },
+    });
+    res.status(200).json(postedDrawings);
+  } catch (error) {
+    console.error("Error getting posts: ", error);
+    res.status(500).json({error: "Internal server error."})
+  }
+});
 
 //functions
 async function addUser(username: string, saltedHash: string) {
