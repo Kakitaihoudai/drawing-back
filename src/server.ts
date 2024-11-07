@@ -99,9 +99,10 @@ app.patch("/update-drawing", async (req, res) => {
         content: content,
       },
     });
-    res.status(204);
+    res.status(204).send("Drawing updated.");
   } catch (error) {
     console.error("Error updating: ", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 
@@ -116,7 +117,31 @@ app.delete("/delete-drawing", async (req, res) => {
     res.status(200).send("Drawing has been deleted.");
   } catch (error) {
     console.error("Error deleting: ", error);
+    res.status(500).json({ error: "Internal server error" });
   }
+});
+
+app.patch("/post-drawing", async (req, res) => {
+  const { id } = req.body;
+  try {
+    const posted = await prisma.drawing.update({
+      where: {
+        id: id
+      },
+      data: {
+        posted: true,
+        posted_at: new Date(),
+      }
+    });
+    res.status(204).send("Drawing posted.");
+  } catch (error) {
+    console.error("Error posting: ", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+app.get("/posted-drawings", async (req, res) => {
+  
 })
 
 //functions
