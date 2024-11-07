@@ -133,7 +133,7 @@ app.patch("/post-drawing", async (req, res) => {
         posted_at: new Date(),
       }
     });
-    res.status(204).send("Drawing posted.");
+    res.status(200).send("Drawing posted.");
   } catch (error) {
     console.error("Error posting: ", error);
     res.status(500).json({ error: "Internal server error" });
