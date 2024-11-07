@@ -149,6 +149,13 @@ app.get("/posted-drawings", async (req, res) => {
       orderBy: {
         posted_at: "desc",
       },
+      include: {
+        author: {
+          select: {
+            username: true
+          }
+        }
+      }
     });
     res.status(200).json(postedDrawings);
   } catch (error) {
