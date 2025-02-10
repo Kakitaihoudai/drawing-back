@@ -4,7 +4,7 @@ import { PrismaClient } from "@prisma/client";
 import { hash, compare } from "bcrypt-ts";
 
 const app = express();
-const PORT = process.env.PORT || 8080;
+const PORT = Number(process.env.PORT) || 8080;
 const prisma = new PrismaClient();
 
 app.use(express.json());
@@ -212,6 +212,6 @@ async function storeDrawing(title: string, content: string, userId: number) {
   }
 }
 
-app.listen(PORT, () => {
+app.listen(PORT, "0.0.0.0", () => {
   console.log(`Express server is up and running at http://localhost:${PORT}`);
 });
